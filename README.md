@@ -20,11 +20,16 @@ or if using Conda:
 
 ### Flagger
 
+![Flagger Gui](images/flagger_gui.PNG)
 
 ### Group
 
+![Group Gui](images/group_gui.PNG)
 
 ### AddGroup
 
+![Add Group Gui](images/addgroup_gui.PNG)
 
 ### Treatment Hours
+
+![Treatment Hours Gui](images/txhourscons_gui.PNG.PNG)
