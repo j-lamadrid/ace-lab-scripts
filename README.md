@@ -53,6 +53,9 @@ Steps:
 8. Choose a filename (without extension)
 9. ```Run```
 
+Example: ASD Transition contains no TD, ASD Features, DD or GDD and must not begin with ASD
+- Entries: ASD Transition; FMD GD LD MD Other TypSibASD; ASD; FMD GD LD MD Other ASD TypSibASD; 2; 'filepath'; 'output name';
+
 ### Treatment Hours
 
 ![Treatment Hours Gui](images/txhourscons_gui.PNG)
