@@ -4,7 +4,7 @@
 
 Scripts made using Python 3.12
 
-If you wish to use the included notebooks, jupyter must also be installed. Included is a requirements.txt with all necessary installs.
+Included is a requirements.txt with all necessary installs.
 
 Run:
 ```pip install -r requirements.txt```
