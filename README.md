@@ -22,13 +22,36 @@ or if using Conda:
 
 ![Flagger Gui](images/flagger_gui.PNG)
 
+Steps:
+1. ```python Flagger.py```
+2. Browse for desired exported data file
+3. Choose a filename (without extension)
+4. ```Run```
+
 ### Group
 
 ![Group Gui](images/group_gui.PNG)
 
+Steps:
+1. ```python Group.py```
+2. Browse for original late talkers data sheet
+3. Choose a filename (without extension)
+4. ```Run```
+
 ### AddGroup
 
 ![Add Group Gui](images/addgroup_gui.PNG)
+
+Steps:
+1. ```python AddGroup.py```
+2. Enter name of new DxJ group in ```New Group```
+3. Enter desired first DxJs in ```Begins With``` or leave blank for all allowed DxJs
+4. Enter desired last DxJs in ```Ends With``` or leave blank for all allowed DxJs
+5. Enter desired possible DxJs between the first and last dxj in ```Possibilities``` or leave blank for all allowed DxJs
+6. Enter minimum number of DxJs for the group in ```Minimum # of DxJ``` (i.e. ASD-LD-ASD requires 3 while ASD-ASD requires 2)
+7. Browse for exported sheet resulting from ```Group.py```
+8. Choose a filename (without extension)
+9. ```Run```
 
 ### Treatment Hours
 
