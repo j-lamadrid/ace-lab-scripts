@@ -32,4 +32,4 @@ or if using Conda:
 
 ### Treatment Hours
 
-![Treatment Hours Gui](images/txhourscons_gui.PNG.PNG)
+![Treatment Hours Gui](images/txhourscons_gui.PNG)
