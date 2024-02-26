@@ -127,6 +127,18 @@ def group_late_talkers(sheet_path, output_name):
 
     talkers_df['DxJ_group'] = groups
     talkers_df.reset_index(drop=True, inplace=True)
+
+    def reset_dxj(x):
+        try:
+            return x.replace('_', ' ')
+        except:
+            return x
+
+    talkers_df['DxJ_DxGroup_1'] = talkers_df['DxJ_DxGroup_1'].apply(lambda dxj: reset_dxj(dxj))
+    talkers_df['DxJ_DxGroup_2'] = talkers_df['DxJ_DxGroup_2'].apply(lambda dxj: reset_dxj(dxj))
+    talkers_df['DxJ_DxGroup_3'] = talkers_df['DxJ_DxGroup_3'].apply(lambda dxj: reset_dxj(dxj))
+    talkers_df['DxJ_DxGroup_4'] = talkers_df['DxJ_DxGroup_4'].apply(lambda dxj: reset_dxj(dxj))
+    talkers_df['DxJ_DxGroup_5'] = talkers_df['DxJ_DxGroup_5'].apply(lambda dxj: reset_dxj(dxj))
     
     print(talkers_df['DxJ_group'].value_counts())
     

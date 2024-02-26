@@ -94,6 +94,22 @@ def add_group(sheet_path, output_name, new_group, begins_with=None, ends_with=No
     df = pd.read_excel(sheet_path)
     
     diags = ['DD', 'FMD', 'GDD', 'GD', 'LD', 'MD', 'Other', 'TD', 'ASD', 'ASD_Features', 'TypSibASD', np.nan]
+
+    def check_dxj(x):
+        if (type(x) == str) and (x[:4] == 'Prev') and (x[:-3] == 'Typ'):
+            return 'TD'
+        elif (type(x) == str) and (x == 'ASD Features'):
+            return 'ASD_Features'
+        elif (type(x) == str) and (x == 'Typ Sib ASD'):
+            return 'TypSibASD'
+        else:
+            return x
+
+    df['DxJ_DxGroup_1'] = df['DxJ_DxGroup_1'].apply(lambda dxj: check_dxj(dxj))
+    df['DxJ_DxGroup_2'] = df['DxJ_DxGroup_2'].apply(lambda dxj: check_dxj(dxj))
+    df['DxJ_DxGroup_3'] = df['DxJ_DxGroup_3'].apply(lambda dxj: check_dxj(dxj))
+    df['DxJ_DxGroup_4'] = df['DxJ_DxGroup_4'].apply(lambda dxj: check_dxj(dxj))
+    df['DxJ_DxGroup_5'] = df['DxJ_DxGroup_5'].apply(lambda dxj: check_dxj(dxj))
     
     if len(begins_with) == 0:
         begins_with = diags
@@ -141,6 +157,18 @@ def add_group(sheet_path, output_name, new_group, begins_with=None, ends_with=No
         new_groups.append(c)
 
     df['DxJ_group'] = new_groups
+
+    def reset_dxj(x):
+        try:
+            return x.replace('_', ' ')
+        except:
+            return x
+
+    df['DxJ_DxGroup_1'] = df['DxJ_DxGroup_1'].apply(lambda dxj: reset_dxj(dxj))
+    df['DxJ_DxGroup_2'] = df['DxJ_DxGroup_2'].apply(lambda dxj: reset_dxj(dxj))
+    df['DxJ_DxGroup_3'] = df['DxJ_DxGroup_3'].apply(lambda dxj: reset_dxj(dxj))
+    df['DxJ_DxGroup_4'] = df['DxJ_DxGroup_4'].apply(lambda dxj: reset_dxj(dxj))
+    df['DxJ_DxGroup_5'] = df['DxJ_DxGroup_5'].apply(lambda dxj: reset_dxj(dxj))
     
     filename = output_name + '.xlsx'
     
