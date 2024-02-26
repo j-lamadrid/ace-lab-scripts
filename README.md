@@ -56,3 +56,9 @@ Steps:
 ### Treatment Hours
 
 ![Treatment Hours Gui](images/txhourscons_gui.PNG)
+
+Steps:
+1. ```python TreatmentHoursConsolidated.py``` or ```python TreatmentHoursFull.py```
+2. Browse for desired tx hours data sheet
+3. Choose a filename (without extension)
+4. ```Run```
