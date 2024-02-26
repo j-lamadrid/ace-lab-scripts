@@ -21,6 +21,7 @@ or if using Conda:
 ### Flagger
 
 ![Flagger Gui](images/flagger_gui.PNG)
+Sorts output form data by Subject ID and Visit Date, flagging each visit with the visit number
 
 Steps:
 1. ```python Flagger.py```
@@ -31,8 +32,8 @@ Steps:
 ### Group
 
 ![Group Gui](images/group_gui.PNG)
+Groups the late talkers data into categorized diagnostic groups (Always Typical, Transient Language Delay, Persistent Language Delay, Persistent Global Delay, LD to ASD, Persistent ASD)
 
-Steps:
 1. ```python Group.py```
 2. Browse for original late talkers data sheet
 3. Choose a filename (without extension)
@@ -41,6 +42,7 @@ Steps:
 ### AddGroup
 
 ![Add Group Gui](images/addgroup_gui.PNG)
+Allows user to create a new diagnostic group to the grouped late talkers data
 
 Steps:
 1. ```python AddGroup.py```
@@ -59,6 +61,7 @@ Example: ASD Transition contains no TD, ASD Features, DD or GDD and must not beg
 ### Treatment Hours
 
 ![Treatment Hours Gui](images/txhourscons_gui.PNG)
+Calculates the total/average number of units a subject has in a given treatment
 
 Steps:
 1. ```python TreatmentHoursConsolidated.py``` or ```python TreatmentHoursFull.py```
