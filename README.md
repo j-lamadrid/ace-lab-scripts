@@ -2,7 +2,7 @@
 
 ### Requirements
 
-Scripts made using Python 3.10.9
+Scripts made using Python 3.12
 
 If you wish to use the included notebooks, jupyter must also be installed. Included is a requirements.txt with all necessary installs.
 
