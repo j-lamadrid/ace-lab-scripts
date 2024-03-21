@@ -91,11 +91,16 @@ class AddGroupGUI:
 
 def add_group(sheet_path, output_name, new_group, begins_with=None, ends_with=None, possibilities=None, min_dxj=2):
     
-    df = pd.read_excel(sheet_path)
+    df = pd.read_excel(sheet_path) # read excel sheet in as a dataframe
     
-    diags = ['DD', 'FMD', 'GDD', 'GD', 'LD', 'MD', 'Other', 'TD', 'ASD', 'ASD_Features', 'TypSibASD', np.nan]
+    diags = ['DD', 'FMD', 'GDD', 'GD', 'LD', 'MD', 'Other', 'TD', 'ASD', 'ASD_Features', 'TypSibASD', np.nan] # list of all allowed diagnoses
 
     def check_dxj(x):
+        """
+        x: diagnosis category
+        
+        normalizes TD diagnosis and ASD features + Typ Sib ASD to remove space
+        """
         if (type(x) == str) and (x[:4] == 'Prev') and (x[:-3] == 'Typ'):
             return 'TD'
         elif (type(x) == str) and (x == 'ASD Features'):
