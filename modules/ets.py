@@ -91,6 +91,8 @@ class EyeTrackingSheet():
             df['Fixation Duration_WholeMovie_SOC_sum'] = df['Total_duration_of_fixations.Soc-' + self.soc_tag]
             
             self.generated_df = df[self.master_df.columns[25:-1]]
+            
+            self.generated_df['Recording Name'] = df['Participant']
         
         elif self.timeline == 'Soc':
             
@@ -131,9 +133,9 @@ class EyeTrackingSheet():
             df['Fixation Duration_Whole Movie_Soc L_Mean'] = df['Average_duration_of_fixations.Soc-' + self.soc_tag]
             df['Fixation Duration_Whole Movie_Soc L_Sum'] = df['Total_duration_of_fixations.Soc-' + self.soc_tag]
             
-            self.generated_df = df[self.master_df.columns[25:-1]]
-        
-        self.generated_df['Recording Name'] = df['Participant']
+            self.generated_df = df[self.master_df.columns[19:-1]]
+            self.generated_df['Recording'] = df['Recording']
+            self.generated_df['Participant'] = df['Participant']
         
         def split_participant(column):
             subject_id = column.apply(lambda data: data[:5])
@@ -151,67 +153,125 @@ class EyeTrackingSheet():
             match = re.search(pattern, geo_fp)
             project = match.group(0)
         
-        self.generated_df['Type of Video'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
+        if self.timeline == 'Geo':
+            self.generated_df['Type of Video'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
+        elif self.timeline == 'Soc':
+            self.generated_df['Video Type'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
+            
         self.generated_df['Project #'] = [project] * self.generated_df.shape[0]
         self.generated_df['Tobii Studio vs. Pro Lab'] = [self.software] * self.generated_df.shape[0]
         self.generated_df['DATA SOURCE'] = [np.nan] * self.generated_df.shape[0]
         self.generated_df['In Mastersheet?'] = [np.nan] * self.generated_df.shape[0]
-        self.generated_df['LONGITUDINAL/SINGLE'] = [np.nan] * self.generated_df.shape[0]
+        
+        if self.timeline == 'Geo':
+            self.generated_df['LONGITUDINAL/SINGLE'] = [np.nan] * self.generated_df.shape[0]
+        elif self.timeline == 'Soc':
+            self.generated_df['Longitudinal/Exclude'] = [np.nan] * self.generated_df.shape[0]
         
         return self.generated_df
         
         
     def fill(self):
         
-        self.lwr_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-        merged_df = pd.merge(self.generated_df, 
-                             self.lwr_df[['Subject ID', 'DOB', 
-                                          'vine_p2f2', 'gender', 
-                                          'recentDxJ', 'recentDxJ_dxCode', 
-                                          'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
-                             on='Subject ID')
+        if self.timeline == 'Geo':
+            self.lwr_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            merged_df = pd.merge(self.generated_df, 
+                                 self.lwr_df[['Subject ID', 'DOB', 
+                                              'vine_p2f2', 'gender', 
+                                              'recentDxJ', 'recentDxJ_dxCode', 
+                                              'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
+                                 on='Subject ID')
+
+            self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
+                                                                ', ' + 
+                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+
+            merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
+                                                                'final_calibration_quality', 'quality',
+                                                                'ageMo']], on='Subject ID')
+
+            merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
+            merged_df['Unnamed: 7'] = [np.nan] * merged_df.shape[0]
+            merged_df['1ST_GOOD/OTHER_TIMEPOINT/EXCLUDE'] = [np.nan] * merged_df.shape[0]
+            merged_df['Recent DxJ Code Number'] = [np.nan] * merged_df.shape[0]
+            merged_df['Twin/Sib'] = [np.nan] * merged_df.shape[0]
+            merged_df['Mz/Dz Twin'] = [np.nan] * merged_df.shape[0]
             
-        self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-        self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
-                                                            ', ' + 
-                                                            self.et_summary_df['vision_Abnormalities_Comnts'])
+            merge_track = self.master_df['Merge#'].values[-1] + 1
+
+            merge_num = []
+            while len(merge_num) < merged_df.shape[0]:
+                merge_num.append(merge_track)
+                merge_track += 1
+
+            merged_df['Merge#'] = merge_num
+
+            merged_df.rename(columns={'ageMo': 'Age at ET'}, inplace=True)
+            merged_df.rename(columns={'vine_p2f2': 'P2F2'}, inplace=True)
+            merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ_evalDate': 'Recent Dx evalDate'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ_ageMo': 'Recent Dx Age'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ': 'Recent DxJ'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
+            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
+            merged_df['Age at ET'] = ((merged_df['Date of Eye-tracking'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
+
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+        
+        elif self.timeline == 'Soc':
+            self.lwr_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            merged_df = pd.merge(self.generated_df, 
+                                 self.lwr_df[['Subject ID', 'DOB', 
+                                              'gender', 
+                                              'recentDxJ', 'recentDxJ_dxCode', 
+                                              'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
+                                 on='Subject ID')
+
+            self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
+                                                                ', ' + 
+                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+
+            merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
+                                                                'final_calibration_quality', 'quality',
+                                                                'ageMo']], on='Subject ID')
+
+            merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
+            merged_df['DxJ Code Number'] = [np.nan] * merged_df.shape[0]
             
-        merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
-                                                            'final_calibration_quality', 'quality',
-                                                            'ageMo']], on='Subject ID')
-        
-        merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
-        merged_df['Unnamed: 7'] = [np.nan] * merged_df.shape[0]
-        merged_df['1ST_GOOD/OTHER_TIMEPOINT/EXCLUDE'] = [np.nan] * merged_df.shape[0]
-        merged_df['Recent DxJ Code Number'] = [np.nan] * merged_df.shape[0]
-        merged_df['Twin/Sib'] = [np.nan] * merged_df.shape[0]
-        merged_df['Mz/Dz Twin'] = [np.nan] * merged_df.shape[0]
+            merge_track = self.master_df['Merge Number'].values[-1] + 1
 
-        merge_track = self.master_df['Merge#'].values[-1] + 1
+            merge_num = []
+            while len(merge_num) < merged_df.shape[0]:
+                merge_num.append(merge_track)
+                merge_track += 1
 
-        merge_num = []
-        while len(merge_num) < merged_df.shape[0]:
-            merge_num.append(merge_track)
-            merge_track += 1
+            merged_df['Merge Number'] = merge_num
+            
+            merged_df.rename(columns={'DOB': 'Date of Birth'}, inplace=True)
+            merged_df.rename(columns={'ageMo': 'ET Age'}, inplace=True)
+            merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ_evalDate': 'Recent Dx Date'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ_ageMo': 'Recent Dx Age'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ': 'Recent DxJ'}, inplace=True)
+            merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
+            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
+            merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
+            merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
+            merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
 
-        merged_df['Merge#'] = merge_num
-        
-        merged_df.rename(columns={'ageMo': 'Age at ET'}, inplace=True)
-        merged_df.rename(columns={'vine_p2f2': 'P2F2'}, inplace=True)
-        merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
-        merged_df.rename(columns={'recentDxJ_evalDate': 'Recent Dx evalDate'}, inplace=True)
-        merged_df.rename(columns={'recentDxJ_ageMo': 'Recent Dx Age'}, inplace=True)
-        merged_df.rename(columns={'recentDxJ': 'Recent DxJ'}, inplace=True)
-        merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
-        merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
-        merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
-        merged_df['Age at ET'] = ((merged_df['Date of Eye-tracking'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
-
-        final_ids = merged_df['Subject ID'].values
-        original_ids = self.generated_df['Subject ID'].values
-        for sid in original_ids:
-            if sid not in final_ids:
-                print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
         
         self.generated_df = merged_df
         
