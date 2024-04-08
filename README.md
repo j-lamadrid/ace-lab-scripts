@@ -18,6 +18,22 @@ or if using Conda:
 2. ```cd``` into this repository
 3. run a chosen script by entering ```python ___.py```
 
+### Eye Tracking Sheet Merger
+
+![ETS Gui](images/ets_gui.PNG)
+
+Takes 4 files and aggregates the data according to what timeline is used, appending the result to the running master data sheet for the given test
+
+Steps:
+1. ```python UpdateEyeTracking.py```
+2. Browse for desired exported data file
+3. Browse for corresponding Master sheet
+4. Browse for most recent ET Summary sheet
+5. Browse for most recent LWR sheet
+6. Select the timeline of the data based on the selected exported/master data
+7. Select the 'software' used for the exported data
+8. ```Run```
+
 ### Flagger
 
 ![Flagger Gui](images/flagger_gui.PNG)
