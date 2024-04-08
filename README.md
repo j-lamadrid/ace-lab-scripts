@@ -18,7 +18,7 @@ or if using Conda:
 2. ```cd``` into this repository
 3. run a chosen script by entering ```python ___.py```
 
-### Eye Tracking Sheet Merger
+### Eye Tracking Sheet Merger (WIP)
 
 ![ETS Gui](images/ets_gui.PNG)
 
