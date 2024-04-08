@@ -15,7 +15,8 @@ class EyeTrackingSheet():
                  lwr_fp, 
                  timeline, 
                  software):
-        
+        self.fp = fp
+	
         self.df = pd.read_csv(fp, sep='\t')
         
         self.df = self.df[~self.df['Participant'].str.lower().str.contains('test')]
@@ -146,11 +147,11 @@ class EyeTrackingSheet():
         
         try:
             pattern = r'Tobii Project (\d+)'
-            match = re.search(pattern, geo_fp)
+            match = re.search(pattern, self.fp)
             project = match.group(0)
         except:
             pattern = r'Project (\d+)'
-            match = re.search(pattern, geo_fp)
+            match = re.search(pattern, self.fp)
             project = match.group(0)
         
         if self.timeline == 'Geo':
