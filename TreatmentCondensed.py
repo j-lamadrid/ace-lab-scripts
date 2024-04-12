@@ -6,7 +6,7 @@ from tkinter import filedialog
 class CalcTxGUI:
     def __init__(self, master):
         self.master = master
-        self.master.title("Treatment Hours Calculator")
+        self.master.title("Treatment Units Calculator")
 
         self.file_path_label = tk.Label(master, text="XLSX File Path:")
         self.file_path_label.grid(row=0, column=0, sticky="w", padx=10, pady=10)
@@ -16,28 +16,43 @@ class CalcTxGUI:
 
         self.browse_button = tk.Button(master, text="Browse", command=self.browse_file)
         self.browse_button.grid(row=0, column=2, padx=10, pady=10)
+        
+        self.output_dir_label = tk.Label(master, text="Output Directory:")
+        self.output_dir_label.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+        
+        self.output_dir_entry = tk.Entry(master, width=40)
+        self.output_dir_entry.grid(row=1, column=1, padx=10, pady=10)
+        
+        self.browse_dir = tk.Button(master, text="Browse", command=self.browse_folder)
+        self.browse_dir.grid(row=1, column=2, padx=10, pady=10)
 
         self.output_name_label = tk.Label(master, text="Output File Name:")
-        self.output_name_label.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+        self.output_name_label.grid(row=2, column=0, sticky="w", padx=10, pady=10)
 
         self.output_name_entry = tk.Entry(master, width=40)
-        self.output_name_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.output_name_entry.grid(row=2, column=1, padx=10, pady=10)
 
         self.run_button = tk.Button(master, text="Run", command=self.run_script)
-        self.run_button.grid(row=2, column=0, columnspan=3, pady=10)
+        self.run_button.grid(row=4, column=0, columnspan=3, pady=10)
 
     def browse_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("XLSX files", "*.xlsx")])
         self.file_path_entry.delete(0, tk.END)
         self.file_path_entry.insert(0, file_path)
+    
+    def browse_folder(self):
+        dir_path = filedialog.askdirectory()
+        self.output_dir_entry.delete(0, tk.END)
+        self.output_dir_entry.insert(0, dir_path)
 
     def run_script(self):
         file_path = self.file_path_entry.get()
+        output_dir = self.output_dir_entry.get()
         output_name = self.output_name_entry.get()
 
         if file_path and output_name:
             try:
-                calculate_treatment_units(file_path, output_name)
+                calculate_treatment_units(file_path, output_dir + '/' + output_name)
                 tk.messagebox.showinfo("Success", "Script executed successfully!")
             except Exception as e:
                 tk.messagebox.showerror("Error", f"An error occurred: {str(e)}")
