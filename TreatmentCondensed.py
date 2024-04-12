@@ -37,25 +37,25 @@ class CalcTxGUI:
 
         if file_path and output_name:
             try:
-                calculate_treatment_hours(file_path, output_name)
+                calculate_treatment_units(file_path, output_name)
                 tk.messagebox.showinfo("Success", "Script executed successfully!")
             except Exception as e:
                 tk.messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:
             tk.messagebox.showerror("Error", "Please provide both input file path and output file name.")
 
-def calculate_treatment_hours(fp, output_name):
+def calculate_treatment_units(fp, output_name):
     
     df = pd.read_excel(fp)
     
     df['Service Date'] = pd.to_datetime(df['Service Year'].astype(str)  + df['Service Month'], format='%Y%B')
     id_code_group = df.groupby(['UCI#', 'Service Code', 'Service Code Description', 'Sub-Code', 'Sub-Code Description', 'Unit Type'])
-    min_years = id_code_group.min()['Service Year']
-    max_years = id_code_group.max()['Service Year']
+    min_years = id_code_group['Service Year'].min()
+    max_years = id_code_group['Service Year'].max()
     total_units = id_code_group['Unit Amount'].sum()
-    total_months = id_code_group.nunique()['Service Date']
-    first_name = id_code_group.max()['First Name']
-    last_name = id_code_group.max()['Last Name']
+    total_months = id_code_group['Service Date'].nunique()
+    first_name = id_code_group['First Name'].max()
+    last_name = id_code_group['Last Name'].max()
     
     out_df = total_units.reset_index()
     out_df['First Name'] = first_name.values
