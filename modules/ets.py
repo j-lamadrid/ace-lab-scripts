@@ -15,14 +15,19 @@ class EyeTrackingSheet():
                  lwr_fp, 
                  timeline, 
                  software):
-
-        self.fp = fp
-
-        self.df = pd.read_csv(fp, sep='\t')
         
-        self.df = self.df[~self.df['Participant'].str.lower().str.contains('test')]
-        self.df = self.df[~self.df['Participant'].str.lower().str.contains('ys')]
-        self.df = self.df[~self.df['Participant'].str.lower().str.contains('ca')]
+        self.fp = fp
+        
+        self.df = pd.read_csv(fp, sep='\t', header=0)
+        
+        if timeline == 'Traffic':
+            self.df = self.df[~self.df['Recording'].str.lower().str.contains('test')]
+            self.df = self.df[~self.df['Recording'].str.lower().str.contains('ys')]
+            self.df = self.df[~self.df['Recording'].str.lower().str.contains('ca')]
+        else:
+            self.df = self.df[~self.df['Participant'].str.lower().str.contains('test')]
+            self.df = self.df[~self.df['Participant'].str.lower().str.contains('ys')]
+            self.df = self.df[~self.df['Participant'].str.lower().str.contains('ca')]
         
         self.master_df = pd.read_excel(master_fp)
         
@@ -34,8 +39,12 @@ class EyeTrackingSheet():
         
         self.software = software
         
-        self.geo_tag = self.df['TOI'][0][-1]
-        self.soc_tag = 'R' if self.geo_tag == 'L' else 'L'
+        if timeline == 'Traffic':
+            self.geo_tag = self.df['Media'][0][-1]
+            self.soc_tag = 'R' if self.geo_tag == 'L' else 'L'
+        else:
+            self.geo_tag = self.df['TOI'][0][-1]
+            self.soc_tag = 'R' if self.geo_tag == 'L' else 'L'
         
         self.generated_df = None
     
@@ -48,10 +57,14 @@ class EyeTrackingSheet():
                  pd.Series(df.columns).apply(lambda s: s.lower()).str.contains('duration') +
                  pd.Series(df.columns).apply(lambda s: s.lower()).str.contains('interval')
                 )
-        to_divide_idx[24] = False
+        
         to_divide = df.columns[to_divide_idx][1:]
-        to_divide
-        df[to_divide] /= 1000
+        
+        for c in to_divide:
+            try:
+                df[c] = df[c].astype(float) / 1000
+            except:
+                pass
             
         if self.timeline == 'Geo':
             
@@ -71,8 +84,8 @@ class EyeTrackingSheet():
             num_sac_sec_soc = num_sac_soc / soc_dur
 
             df['Total Fixation Duration'] = tol_fix_dur
-            df['% Fixation Geo'] = per_fix_geo
-            df['% Fixation Social'] = per_fix_soc
+            df['% Fixation Geo'] = per_fix_geo * 100
+            df['% Fixation Social'] = per_fix_soc * 100
             df['# Saccades Geo (n-1 fixations)'] = num_sac_geo
             df['# Saccades Social (n-1 fixations)'] = num_sac_soc
             df['Saccades per Second Geo'] = num_sac_sec_geo
@@ -114,8 +127,8 @@ class EyeTrackingSheet():
             num_sac_sec_soc = num_sac_soc / soc_dur
 
             df['Total Fixation Duration'] = tol_fix_dur
-            df['% Fixation Geo '] = per_fix_geo
-            df['% Fixation Socia'] = per_fix_soc
+            df['% Fixation Geo '] = per_fix_geo * 100
+            df['% Fixation Socia'] = per_fix_soc * 100
             df['# Saccades Geo (n-1 fixations)'] = num_sac_geo
             df['# Saccades Social (n-1 fixations)'] = num_sac_soc
             df['Saccades per Second Geo (n-1 fixations)'] = num_sac_sec_geo
@@ -157,8 +170,8 @@ class EyeTrackingSheet():
             num_sac_sec_soc = num_sac_soc / soc_dur
             
             df['Total Fixation Duration'] = tol_fix_dur
-            df['% Fixation Geo'] = per_fix_geo
-            df['% Fixation Social'] = per_fix_soc
+            df['% Fixation Geo'] = per_fix_geo * 100
+            df['% Fixation Social'] = per_fix_soc * 100
             df['# Saccades Geo (n-1 fixations)'] = num_sac_geo
             df['# Saccades Social (n-1 fixations)'] = num_sac_soc
             df['Saccades per Second Geo (n-1 fixations)'] = num_sac_sec_geo
@@ -180,12 +193,86 @@ class EyeTrackingSheet():
             self.generated_df['Recording'] = df['Recording']
             self.generated_df['Participant'] = df['Participant']
         
+        elif self.timeline == 'Traffic':
+            
+            m_dur = df['Total_duration_of_fixations.Motherese-' + self.geo_tag]
+            t_dur = df['Total_duration_of_fixations.Traffic-' + self.soc_tag]
+            m_fix = df['Number_of_fixations.Motherese-' + self.geo_tag]
+            t_fix = df['Number_of_fixations.Traffic-' + self.soc_tag]
+            m_sac = df['Number_of_saccades_in_AOI.Motherese-' + self.geo_tag]
+            t_sac = df['Number_of_saccades_in_AOI.Traffic-' + self.soc_tag]
+
+            tol_fix_dur = m_dur + t_dur
+            per_fix_m = m_dur / tol_fix_dur
+            per_fix_t = t_dur / tol_fix_dur
+            num_sac_m = m_fix - 1
+            num_sac_t = t_fix - 1
+            num_sac_sec_m = num_sac_m / m_dur
+            num_sac_sec_t = num_sac_t / t_dur
+            
+            df['Total'] = tol_fix_dur
+            df['% Fixation Motherese'] = per_fix_m * 100
+            df['% Fixation Traffic'] = per_fix_t * 100
+            df['# Saccades (n-1 Fixations) QL Motherese'] = num_sac_m
+            df['# Saccades (n-1 Fixations) Traffic'] = num_sac_t
+            df['Saccades Per Second Motherese'] = num_sac_sec_m
+            df['Saccades Per Second Traffic'] = num_sac_sec_t
+
+            df['Number_of_saccades_in_AOI-QLmotherese'] = m_sac
+            df['Number_of_saccades_in_AOI-Traffic'] = t_sac
+
+
+            df['Number_of_Fixations_QL Motherese_N'] = df['Number_of_fixations.Motherese-' + self.geo_tag]
+            df['Fixation Duration_Whole Movie_QL Motherese _Mean'] = df['Average_duration_of_fixations.Motherese-' + self.geo_tag]
+            df['Fixation Duration_Whole Movie_QL Motherese _Sum'] = df['Total_duration_of_fixations.Motherese-' + self.geo_tag]
+
+            df['Number_of_Fixations_Traffic _N'] = df['Number_of_fixations.Traffic-' + self.soc_tag]
+            df['Fixation Duration_Whole Movie_Traffic _Mean'] = df['Average_duration_of_fixations.Traffic-' + self.soc_tag]
+            df['Fixation Duration_Whole Movie_Traffic _Sum'] = df['Total_duration_of_fixations.Traffic-' + self.soc_tag]
+            
+            df['Fixation.Duration_Whole.Scene_Background_.AboveGrayCat_Sum'] = df['Total_duration_of_fixations.Background_AboveGrayCat']
+            df['Fixation.Duration_Whole.Scene_Background_AboveOrangeCat_Sum'] = df['Total_duration_of_fixations.Background_AboveOrangeCat']
+            df['Fixation.Duration_Whole.Scene_Background_Forehead_Sum'] = df['Total_duration_of_fixations.Background_Forehead']
+            df['Fixation.Duration_Whole.Scene_Background_ShoulderArea_Sum'] = df['Total_duration_of_fixations.Background_ShoulderArea']
+            df['Fixation.Duration_Whole.Scene_Eyes_Sum'] = df['Total_duration_of_fixations.Eyes']
+            df['Fixation.Duration_Whole.Scene_Face_Sum'] = df['Total_duration_of_fixations.Face']
+            df['Fixation.Duration_Whole.Scene_Mouth_Sum'] = df['Total_duration_of_fixations.Mouth']
+            df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] = df['Total_duration_of_fixations.Object_GrayCat']
+            df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'] = df['Total_duration_of_fixations.Object_OrangeCat']
+            
+            total_fix = (df['Fixation.Duration_Whole.Scene_Background_.AboveGrayCat_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Background_AboveOrangeCat_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Background_Forehead_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Background_ShoulderArea_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Eyes_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Face_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Mouth_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] +
+                         df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'])
+            
+            df['Percent.FIX_Background_.AboveGrayCat'] = 100 * df['Fixation.Duration_Whole.Scene_Background_.AboveGrayCat_Sum'] / total_fix
+            df['Percent.FIX_Background_AboveOrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Background_AboveOrangeCat_Sum'] / total_fix
+            df['Percent.FIX_Background_Forehead'] = 100 * df['Fixation.Duration_Whole.Scene_Background_Forehead_Sum'] / total_fix
+            df['Percent.FIX_Background_ShoulderArea'] = 100 * df['Fixation.Duration_Whole.Scene_Background_ShoulderArea_Sum'] / total_fix
+            df['Percent.FIX_Eyes'] = 100 * df['Fixation.Duration_Whole.Scene_Eyes_Sum'] / total_fix
+            df['Percent.FIX_Face'] = 100 * df['Fixation.Duration_Whole.Scene_Face_Sum'] / total_fix
+            df['Percent.FIX_Mouth'] = 100 * df['Fixation.Duration_Whole.Scene_Mouth_Sum'] / total_fix
+            df['Percent.FIX_Object_GrayCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] / total_fix
+            df['Percent.FIX_Object_OrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'] / total_fix
+            
+            self.generated_df = df[self.master_df.columns[19:-1]]
+            self.generated_df['Recording'] = df['Recording']
+            self.generated_df['Participant'] = df['Participant']
+        
         def split_participant(column):
             subject_id = column.apply(lambda data: data[:5])
             date = column.apply(lambda data: pd.to_datetime(data[6:]))
             return subject_id, date
         
-        self.generated_df['Subject ID'], self.generated_df['Date of Eye-tracking'] = split_participant(df['Participant'])
+        if self.timeline == 'Traffic':
+            self.generated_df['Subject ID'], self.generated_df['Date of Eye-tracking'] = split_participant(df['Recording'])
+        else:
+            self.generated_df['Subject ID'], self.generated_df['Date of Eye-tracking'] = split_participant(df['Participant'])
         
         try:
             pattern = r'Tobii Project (\d+)'
@@ -200,15 +287,21 @@ class EyeTrackingSheet():
             self.generated_df['Type of Video'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
         elif self.timeline == 'Soc' or self.timeline == 'Play':
             self.generated_df['Video Type'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
+        elif self.timeline == 'Traffic':
+            self.generated_df['VideoType'] = 'Motherese-' + self.geo_tag + ', ' + 'Traffic-' + self.soc_tag
+        
+        if self.timeline == 'Traffic':
+            self.generated_df['Project #'] = ['Motherese vs Traffic ' + project] * self.generated_df.shape[0]
+        else:
+            self.generated_df['Project #'] = [project] * self.generated_df.shape[0]
             
-        self.generated_df['Project #'] = [project] * self.generated_df.shape[0]
         self.generated_df['Tobii Studio vs. Pro Lab'] = [self.software] * self.generated_df.shape[0]
         self.generated_df['DATA SOURCE'] = [np.nan] * self.generated_df.shape[0]
         self.generated_df['In Mastersheet?'] = [np.nan] * self.generated_df.shape[0]
         
         if self.timeline == 'Geo':
             self.generated_df['LONGITUDINAL/SINGLE'] = [np.nan] * self.generated_df.shape[0]
-        elif self.timeline == 'Soc' or self.timeline == 'Play':
+        elif self.timeline == 'Soc' or self.timeline == 'Play' or self.timeline == 'Traffic':
             self.generated_df['Longitudinal/Exclude'] = [np.nan] * self.generated_df.shape[0]
         
         return self.generated_df
