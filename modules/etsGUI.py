@@ -48,7 +48,7 @@ class etsGUI:
 
         self.timeline_var = tk.StringVar(master)
         self.timeline_var.set("Original GeoPref")  # default value
-        self.timeline_options = ["Original GeoPref", "Complex Social GeoPref", "Peer Play GeoPref"]
+        self.timeline_options = ["Original GeoPref", "Complex Social GeoPref", "Peer Play GeoPref", "Motherese QL vs Traffic"]
         self.timeline_dropdown = tk.OptionMenu(master, self.timeline_var, *self.timeline_options)
         self.timeline_dropdown.grid(row=4, column=1, padx=10, pady=10)
 
@@ -95,6 +95,8 @@ class etsGUI:
                 timeline = 'Soc'
         elif self.timeline_var.get() ==  "Peer Play GeoPref":
                 timeline = 'Play'
+        elif self.timeline_var.get() == "Motherese QL vs Traffic":
+                timeline = 'Traffic'
         software = self.software_var.get()
         
 

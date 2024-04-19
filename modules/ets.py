@@ -137,8 +137,8 @@ class EyeTrackingSheet():
             df['# Saccades Geo (Tobii Pro Lab)'] = geo_sac
             df['# Saccades Social(Tobii Pro Lab)'] = soc_sac
 
-            df['Saccades per Second Geo (Tobii Pro Lab)'] = geo_sac / geo_dur
-            df['Saccades Per Second Social (Tobii Pro Lab)'] = soc_sac / soc_dur
+            df['Saccades per Second Geo'] = geo_sac / geo_dur
+            df['Saccades Per Second Social'] = soc_sac / soc_dur
 
             df['Number_of_fixations_Whole Movie_Geo R_N'] = df['Number_of_fixations.Geo-' + self.geo_tag]
             df['Fixation Duration_Whole Movie_Geo R_Mean'] = df['Average_duration_of_fixations.Geo-' + self.geo_tag]
@@ -261,7 +261,7 @@ class EyeTrackingSheet():
             df['Percent.FIX_Object_OrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'] / total_fix
             
             self.generated_df = df[self.master_df.columns[19:-1]]
-            self.generated_df['Recording'] = df['Recording']
+            self.generated_df['Recording Name'] = df['Recording']
             self.generated_df['Participant'] = df['Participant']
         
         def split_participant(column):
@@ -353,6 +353,8 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
             merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
+            merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent Dx evalDate']) - pd.to_datetime(merged_df['DOB'])) / 
+                                          pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['Age at ET'] = ((merged_df['Date of Eye-tracking'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
 
             final_ids = merged_df['Subject ID'].values
@@ -403,6 +405,8 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
             merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
+            merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent Dx Date']) - pd.to_datetime(merged_df['Date of Birth'])) / 
+                                          pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
 
             final_ids = merged_df['Subject ID'].values
@@ -453,6 +457,8 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision'}, inplace=True)
             merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
+            merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent DxDate']) - pd.to_datetime(merged_df['Date of Birth'])) / 
+                                          pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
 
             final_ids = merged_df['Subject ID'].values
@@ -460,8 +466,54 @@ class EyeTrackingSheet():
             for sid in original_ids:
                 if sid not in final_ids:
                     print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+                    
+        elif self.timeline == 'Traffic':
             
+            self.lwr_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            merged_df = pd.merge(self.generated_df, 
+                                 self.lwr_df[['Subject ID', 'DOB', 
+                                              'gender', 
+                                              'recentDxJ', 'recentDxJ_dxCode', 
+                                              'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
+                                 on='Subject ID')
+
+            self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
+                                                                ', ' + 
+                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+
+            merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
+                                                                'final_calibration_quality', 'quality',
+                                                                'ageMo']], on='Subject ID')
+
+            merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
+            merged_df['Recent DxJ Number'] = [np.nan] * merged_df.shape[0]
+            merged_df['Data Comments'] = [np.nan] * merged_df.shape[0]
             
+            merge_track = self.master_df['Merge Number'].values[-1] + 1
+
+            merge_num = []
+            while len(merge_num) < merged_df.shape[0]:
+                merge_num.append(int(merge_track))
+                merge_track += 1
+
+            merged_df['Merge Number'] = merge_num
+            
+            merged_df.rename(columns={'ageMo': 'ET Age'}, inplace=True)
+            merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
+            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
+            merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
+            merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
+            merged_df['recentDxJ_ageMo'] = ((pd.to_datetime(merged_df['recentDxJ_evalDate']) - pd.to_datetime(merged_df['DOB'])) / 
+                                            pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
+            merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
+
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
         
         self.generated_df = merged_df
         
@@ -475,21 +527,42 @@ class EyeTrackingSheet():
         self.master_df = pd.concat([self.master_df, self.generated_df], ignore_index=True)
         
         if self.timeline == 'Geo':
-            rounded_ages = []
-            for age in self.master_df['Age at ET']:
+            rounded_et = []
+            rounded_dxj = []
+            for i in range(len(self.master_df['Age at ET'])):
                 try:
-                    rounded_ages.append(round(float(age), 2))
+                    rounded_et.append(round(float(self.master_df['Age at ET'][i]), 2))
+                    rounded_dxj.append(round(float(self.master_df['Recent Dx Age'][i]), 2))
                 except:
-                    rounded_ages.append(np.nan)
-            self.master_df['Age at ET'] = rounded_ages
+                    rounded_et.append(np.nan)
+                    rounded_dxj.append(np.nan)
+            self.master_df['Age at ET'] = rounded_et
+            self.master_df['Recent Dx Age'] = rounded_dxj
             
         elif self.timeline == 'Soc' or self.timeline == 'Play':
-            rounded_ages = []
-            for age in self.master_df['ET Age']:
+            rounded_et = []
+            rounded_dxj = []
+            for i in range(len(self.master_df['ET Age'])):
                 try:
-                    rounded_ages.append(round(float(age), 2))
+                    rounded_et.append(round(float(self.master_df['ET Age'][i]), 2))
+                    rounded_dxj.append(round(float(self.master_df['Recent Dx Age'][i]), 2))
                 except:
-                    rounded_ages.append(np.nan)
-            self.master_df['ET Age'] = rounded_ages
+                    rounded_et.append(np.nan)
+                    rounded_dxj.append(np.nan)
+            self.master_df['ET Age'] = rounded_et
+            self.master_df['Recent Dx Age'] = rounded_dxj
         
+        elif self.timeline == 'Traffic':
+            rounded_et = []
+            rounded_dxj = []
+            for i in range(len(self.master_df['ET Age'])):
+                try:
+                    rounded_et.append(round(float(self.master_df['ET Age'][i]), 2))
+                    rounded_dxj.append(round(float(self.master_df['recentDxJ_ageMo'][i]), 2))
+                except:
+                    rounded_et.append(np.nan)
+                    rounded_dxj.append(np.nan)
+            self.master_df['ET Age'] = rounded_et
+            self.master_df['recentDxJ_ageMo'] = rounded_dxj
+            
         return self.master_df
