@@ -20,7 +20,7 @@ class EyeTrackingSheet():
         
         self.df = pd.read_csv(fp, sep='\t', header=0)
         
-        if timeline == 'Traffic':
+        if timeline in ['Traffic', 'Techno']:
             self.df = self.df[~self.df['Recording'].str.lower().str.contains('test')]
             self.df = self.df[~self.df['Recording'].str.lower().str.contains('ys')]
             self.df = self.df[~self.df['Recording'].str.lower().str.contains('ca')]
@@ -39,7 +39,7 @@ class EyeTrackingSheet():
         
         self.software = software
         
-        if timeline == 'Traffic':
+        if timeline in ['Traffic', 'Techno']:
             self.geo_tag = self.df['Media'][0][-1]
             self.soc_tag = 'R' if self.geo_tag == 'L' else 'L'
         else:
@@ -240,25 +240,70 @@ class EyeTrackingSheet():
             df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] = df['Total_duration_of_fixations.Object_GrayCat']
             df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'] = df['Total_duration_of_fixations.Object_OrangeCat']
             
-            total_fix = (df['Fixation.Duration_Whole.Scene_Background_.AboveGrayCat_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Background_AboveOrangeCat_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Background_Forehead_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Background_ShoulderArea_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Eyes_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Face_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Mouth_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] +
-                         df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'])
+            df['Percent.FIX_Background_.AboveGrayCat'] = 100 * df['Fixation.Duration_Whole.Scene_Background_.AboveGrayCat_Sum'] / tol_fix_dur
+            df['Percent.FIX_Background_AboveOrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Background_AboveOrangeCat_Sum'] / tol_fix_dur
+            df['Percent.FIX_Background_Forehead'] = 100 * df['Fixation.Duration_Whole.Scene_Background_Forehead_Sum'] / tol_fix_dur
+            df['Percent.FIX_Background_ShoulderArea'] = 100 * df['Fixation.Duration_Whole.Scene_Background_ShoulderArea_Sum'] / tol_fix_dur
+            df['Percent.FIX_Eyes'] = 100 * df['Fixation.Duration_Whole.Scene_Eyes_Sum'] / tol_fix_dur
+            df['Percent.FIX_Face'] = 100 * df['Fixation.Duration_Whole.Scene_Face_Sum'] / tol_fix_dur
+            df['Percent.FIX_Mouth'] = 100 * df['Fixation.Duration_Whole.Scene_Mouth_Sum'] / tol_fix_dur
+            df['Percent.FIX_Object_GrayCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] / tol_fix_dur
+            df['Percent.FIX_Object_OrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'] / tol_fix_dur
             
-            df['Percent.FIX_Background_.AboveGrayCat'] = 100 * df['Fixation.Duration_Whole.Scene_Background_.AboveGrayCat_Sum'] / total_fix
-            df['Percent.FIX_Background_AboveOrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Background_AboveOrangeCat_Sum'] / total_fix
-            df['Percent.FIX_Background_Forehead'] = 100 * df['Fixation.Duration_Whole.Scene_Background_Forehead_Sum'] / total_fix
-            df['Percent.FIX_Background_ShoulderArea'] = 100 * df['Fixation.Duration_Whole.Scene_Background_ShoulderArea_Sum'] / total_fix
-            df['Percent.FIX_Eyes'] = 100 * df['Fixation.Duration_Whole.Scene_Eyes_Sum'] / total_fix
-            df['Percent.FIX_Face'] = 100 * df['Fixation.Duration_Whole.Scene_Face_Sum'] / total_fix
-            df['Percent.FIX_Mouth'] = 100 * df['Fixation.Duration_Whole.Scene_Mouth_Sum'] / total_fix
-            df['Percent.FIX_Object_GrayCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_GrayCat_Sum'] / total_fix
-            df['Percent.FIX_Object_OrangeCat'] = 100 * df['Fixation.Duration_Whole.Scene_Object_OrangeCat_Sum'] / total_fix
+            self.generated_df = df[self.master_df.columns[19:-1]]
+            self.generated_df['Recording Name'] = df['Recording']
+            self.generated_df['Participant'] = df['Participant']
+        
+        elif self.timeline == 'Techno':
+            
+            m_dur = df['Total_duration_of_fixations.Motherese-' + self.geo_tag]
+            t_dur = df['Total_duration_of_fixations.Techno-' + self.soc_tag]
+            m_fix = df['Number_of_fixations.Motherese-' + self.geo_tag]
+            t_fix = df['Number_of_fixations.Techno-' + self.soc_tag]
+            m_sac = df['Number_of_saccades_in_AOI.Motherese-' + self.geo_tag]
+            t_sac = df['Number_of_saccades_in_AOI.Techno-' + self.soc_tag]
+
+            tol_fix_dur = m_dur + t_dur
+            per_fix_m = m_dur / tol_fix_dur
+            per_fix_t = t_dur / tol_fix_dur
+            num_sac_m = m_fix - 1
+            num_sac_t = t_fix - 1
+            num_sac_sec_m = num_sac_m / m_dur
+            num_sac_sec_t = num_sac_t / t_dur
+            
+            df['Total Time'] = tol_fix_dur
+            df['% Fixation Motherese'] = per_fix_m * 100
+            df['% Fixation Techno'] = per_fix_t * 100
+            df['# of Saccades (n-1 Fixations) LK Motherese'] = num_sac_m
+            df['# of Saccades (n-1 Fixations) Techno Space'] = num_sac_t
+            df['Saccades Per Second Motherese'] = num_sac_sec_m
+            df['Saccades Per Second Techno'] = num_sac_sec_t
+
+            df['Number_of_saccades_in_AOI.-LKMotherese'] = m_sac
+            df['Number_of_saccades_in_AOI.-Techno'] = t_sac
+
+
+            df['Number_of_Fixations_LK Motherese_N'] = df['Number_of_fixations.Motherese-' + self.geo_tag]
+            df['Fixation Duration_Whole Scene_LK Motherese_Mean'] = df['Average_duration_of_fixations.Motherese-' + self.geo_tag]
+            df['Fixation Duration_Whole Scene_LK Motherese_Sum'] = df['Total_duration_of_fixations.Motherese-' + self.geo_tag]
+
+            df['Number_of_Fixations_Techno_N'] = df['Number_of_fixations.Techno-' + self.soc_tag]
+            df['Fixation Duration_Whole Scene_Techno_Mean'] = df['Average_duration_of_fixations.Techno-' + self.soc_tag]
+            df['Fixation Duration_Whole Scene_Techno_Sum'] = df['Total_duration_of_fixations.Techno-' + self.soc_tag]
+            
+            df['Fixation.Duration_Whole.Scene_Background.2_Sum'] = df['Total_duration_of_fixations.Background']
+            df['Fixation.Duration_Whole.Scene_Background_ShoulderArea.2_Sum'] = df['Total_duration_of_fixations.Background_ShoulderArea']
+            df['Fixation.Duration_Whole.Scene_Eyes.2_Sum'] = df['Total_duration_of_fixations.Eyes']
+            df['Fixation.Duration_Whole.Scene_Face.2_Sum'] = df['Total_duration_of_fixations.Face']
+            df['Fixation.Duration_Whole.Scene_Mouth.2_Sum'] = df['Total_duration_of_fixations.Mouth']
+            df['Fixation.Duration_Whole.Scene_Object_Doggie.2_Sum'] = df['Total_duration_of_fixations.Object_Doggie']
+            
+            df['Percent.Fix_Background'] = 100 * df['Fixation.Duration_Whole.Scene_Background.2_Sum'] / tol_fix_dur
+            df['Percent.Fix_Background_ShoulderArea'] = 100 * df['Fixation.Duration_Whole.Scene_Background_ShoulderArea.2_Sum'] / tol_fix_dur
+            df['Percent.Fix_Eyes'] = 100 * df['Fixation.Duration_Whole.Scene_Eyes.2_Sum'] / tol_fix_dur
+            df['Percent.Fix_Face'] = 100 * df['Fixation.Duration_Whole.Scene_Face.2_Sum'] / tol_fix_dur
+            df['Percent.Fix_Mouth'] = 100 * df['Fixation.Duration_Whole.Scene_Mouth.2_Sum'] / tol_fix_dur
+            df['Percent.Fix_Object_Doggie'] = 100 * df['Fixation.Duration_Whole.Scene_Object_Doggie.2_Sum'] / tol_fix_dur
             
             self.generated_df = df[self.master_df.columns[19:-1]]
             self.generated_df['Recording Name'] = df['Recording']
@@ -269,7 +314,7 @@ class EyeTrackingSheet():
             date = column.apply(lambda data: pd.to_datetime(data[6:]))
             return subject_id, date
         
-        if self.timeline == 'Traffic':
+        if self.timeline == 'Traffic' or self.timeline == 'Techno':
             self.generated_df['Subject ID'], self.generated_df['Date of Eye-tracking'] = split_participant(df['Recording'])
         else:
             self.generated_df['Subject ID'], self.generated_df['Date of Eye-tracking'] = split_participant(df['Participant'])
@@ -289,9 +334,13 @@ class EyeTrackingSheet():
             self.generated_df['Video Type'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
         elif self.timeline == 'Traffic':
             self.generated_df['VideoType'] = 'Motherese-' + self.geo_tag + ', ' + 'Traffic-' + self.soc_tag
+        elif self.timeline == 'Techno':
+            self.generated_df['VideoType'] = 'Motherese-' + self.geo_tag + ', ' + 'Techno-' + self.soc_tag
         
         if self.timeline == 'Traffic':
             self.generated_df['Project #'] = ['Motherese vs Traffic ' + project] * self.generated_df.shape[0]
+        elif self.timeline == 'Techno':
+            self.generated_df['Project #'] = ['Motherese vs Techno ' + project] * self.generated_df.shape[0]
         else:
             self.generated_df['Project #'] = [project] * self.generated_df.shape[0]
             
@@ -301,7 +350,7 @@ class EyeTrackingSheet():
         
         if self.timeline == 'Geo':
             self.generated_df['LONGITUDINAL/SINGLE'] = [np.nan] * self.generated_df.shape[0]
-        elif self.timeline == 'Soc' or self.timeline == 'Play' or self.timeline == 'Traffic':
+        elif self.timeline in ['Soc', 'Play', 'Traffic', 'Techno']:
             self.generated_df['Longitudinal/Exclude'] = [np.nan] * self.generated_df.shape[0]
         
         return self.generated_df
@@ -335,7 +384,10 @@ class EyeTrackingSheet():
             merged_df['Twin/Sib'] = [np.nan] * merged_df.shape[0]
             merged_df['Mz/Dz Twin'] = [np.nan] * merged_df.shape[0]
             
-            merge_track = self.master_df['Merge#'].values[-1] + 1
+            try:
+                merge_track = max([i for i in self.master_df['Merge#'].values if str(i).isdigit()]) + 1
+            except:
+                merge_track = 1
 
             merge_num = []
             while len(merge_num) < merged_df.shape[0]:
@@ -385,7 +437,10 @@ class EyeTrackingSheet():
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['DxJ Code Number'] = [np.nan] * merged_df.shape[0]
             
-            merge_track = self.master_df['Merge Number'].values[-1] + 1
+            try:
+                merge_track = max([i for i in self.master_df['Merge Number'].values if str(i).isdigit()]) + 1
+            except:
+                merge_track = 1
 
             merge_num = []
             while len(merge_num) < merged_df.shape[0]:
@@ -437,7 +492,10 @@ class EyeTrackingSheet():
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['Recent Dx Code Number'] = [np.nan] * merged_df.shape[0]
             
-            merge_track = self.master_df['Notes'].values[-1] + 1
+            try:
+                merge_track = max([i for i in self.master_df['Notes'].values if str(i).isdigit()]) + 1
+            except:
+                merge_track = 1
 
             merge_num = []
             while len(merge_num) < merged_df.shape[0]:
@@ -490,7 +548,10 @@ class EyeTrackingSheet():
             merged_df['Recent DxJ Number'] = [np.nan] * merged_df.shape[0]
             merged_df['Data Comments'] = [np.nan] * merged_df.shape[0]
             
-            merge_track = self.master_df['Merge Number'].values[-1] + 1
+            try:
+                merge_track = max([i for i in self.master_df['Merge Number'].values if str(i).isdigit()]) + 1
+            except:
+                merge_track = 1
 
             merge_num = []
             while len(merge_num) < merged_df.shape[0]:
@@ -508,6 +569,58 @@ class EyeTrackingSheet():
             merged_df['recentDxJ_ageMo'] = ((pd.to_datetime(merged_df['recentDxJ_evalDate']) - pd.to_datetime(merged_df['DOB'])) / 
                                             pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
+
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+        
+        elif self.timeline == 'Techno':
+            
+            self.lwr_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            merged_df = pd.merge(self.generated_df, 
+                                 self.lwr_df[['Subject ID', 'DOB', 
+                                              'gender', 
+                                              'recentDxJ', 'recentDxJ_dxCode', 
+                                              'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
+                                 on='Subject ID')
+
+            self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
+            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
+                                                                ', ' + 
+                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+
+            merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
+                                                                'final_calibration_quality', 'quality',
+                                                                'ageMo']], on='Subject ID')
+
+            merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
+            merged_df['Recent DxCode Number'] = [np.nan] * merged_df.shape[0]
+            merged_df['Moderate Data Details'] = [np.nan] * merged_df.shape[0]
+            
+            try:
+                merge_track = max([i for i in self.master_df['Merge Number'].values if str(i).isdigit()]) + 1
+            except:
+                merge_track = 1
+            
+            merge_num = []
+            while len(merge_num) < merged_df.shape[0]:
+                merge_num.append(int(merge_track))
+                merge_track += 1
+
+            merged_df['Merge Number'] = merge_num
+            
+            merged_df.rename(columns={'DOB': 'Date of Birth'}, inplace=True)
+            merged_df.rename(columns={'ageMo': 'ET Age'}, inplace=True)
+            merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
+            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
+            merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
+            merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
+            merged_df['recentDxJ_ageMo'] = ((pd.to_datetime(merged_df['recentDxJ_evalDate']) - pd.to_datetime(merged_df['Date of Birth'])) / 
+                                            pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
+            merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
 
             final_ids = merged_df['Subject ID'].values
             original_ids = self.generated_df['Subject ID'].values
@@ -539,7 +652,7 @@ class EyeTrackingSheet():
             self.master_df['Age at ET'] = rounded_et
             self.master_df['Recent Dx Age'] = rounded_dxj
             
-        elif self.timeline == 'Soc' or self.timeline == 'Play':
+        elif self.timeline in ['Soc', 'Play']:
             rounded_et = []
             rounded_dxj = []
             for i in range(len(self.master_df['ET Age'])):
@@ -552,7 +665,7 @@ class EyeTrackingSheet():
             self.master_df['ET Age'] = rounded_et
             self.master_df['Recent Dx Age'] = rounded_dxj
         
-        elif self.timeline == 'Traffic':
+        elif self.timeline in ['Traffic', 'Techno']:
             rounded_et = []
             rounded_dxj = []
             for i in range(len(self.master_df['ET Age'])):

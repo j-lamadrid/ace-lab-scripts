@@ -48,7 +48,7 @@ class etsGUI:
 
         self.timeline_var = tk.StringVar(master)
         self.timeline_var.set("Original GeoPref")  # default value
-        self.timeline_options = ["Original GeoPref", "Complex Social GeoPref", "Peer Play GeoPref", "Motherese QL vs Traffic"]
+        self.timeline_options = ["Original GeoPref", "Complex Social GeoPref", "Peer Play GeoPref", "Motherese QL vs Traffic", "Motherese LK vs Techno"]
         self.timeline_dropdown = tk.OptionMenu(master, self.timeline_var, *self.timeline_options)
         self.timeline_dropdown.grid(row=4, column=1, padx=10, pady=10)
 
@@ -97,8 +97,9 @@ class etsGUI:
                 timeline = 'Play'
         elif self.timeline_var.get() == "Motherese QL vs Traffic":
                 timeline = 'Traffic'
+        elif self.timeline_var.get() == "Motherese LK vs Techno":
+                timeline = 'Techno'
         software = self.software_var.get()
-        
 
         if file_path and master_fp and et_summary_fp and timeline and software:
             try:
