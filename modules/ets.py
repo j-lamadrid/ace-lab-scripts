@@ -24,6 +24,7 @@ class EyeTrackingSheet():
             self.df = self.df[~self.df['Recording'].str.lower().str.contains('test')]
             self.df = self.df[~self.df['Recording'].str.lower().str.contains('ys')]
             self.df = self.df[~self.df['Recording'].str.lower().str.contains('ca')]
+            self.df = self.df[self.df['TOI'].str.lower().str.contains('toi')]
         else:
             self.df = self.df[~self.df['Participant'].str.lower().str.contains('test')]
             self.df = self.df[~self.df['Participant'].str.lower().str.contains('ys')]
