@@ -3,6 +3,8 @@ from tkinter import filedialog, messagebox
 from modules.ets import EyeTrackingSheet
 
 class etsGUI:
+
+
     def __init__(self, master):
         self.master = master
         self.master.title("Eye Tracking Sheet Merger")
@@ -61,8 +63,23 @@ class etsGUI:
         self.software_dropdown = tk.OptionMenu(master, self.software_var, *self.software_options)
         self.software_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
+        self.other_software_label = tk.Label(master, text="Other Software:")
+        self.other_software_label.grid(row=6, column=0, sticky="w", padx=10, pady=10)
+        
+        self.other_software_entry = tk.Entry(master, width=20)
+        self.other_software_entry.grid(row=6, column=1, padx=10, pady=10)
+        self.other_software_entry.grid_remove()
+        
+        self.software_var.trace("w", self.show_hide_other_software_entry)
+
         self.run_button = tk.Button(master, text="Run", command=self.run_script)
-        self.run_button.grid(row=7, column=0, columnspan=3, pady=10)
+        self.run_button.grid(row=8, column=0, columnspan=3, pady=10)
+    
+    def show_hide_other_software_entry(self, *args):
+        if self.software_var.get() == "Other":
+            self.other_software_entry.grid()
+        else:
+            self.other_software_entry.grid_remove()
 
     def browse_tsv(self):
         file_path = filedialog.askopenfilename(filetypes=[("TSV files", "*.tsv")])
@@ -89,6 +106,7 @@ class etsGUI:
         master_fp = self.master_fp_entry.get()
         et_summary_fp = self.sum_fp_entry.get()
         lwr_fp = self.lwr_fp_entry.get()
+
         if self.timeline_var.get() == "Original GeoPref":
                 timeline = 'Geo'
         elif self.timeline_var.get() ==  "Complex Social GeoPref":
@@ -99,7 +117,11 @@ class etsGUI:
                 timeline = 'Traffic'
         elif self.timeline_var.get() == "Motherese LK vs Techno":
                 timeline = 'Techno'
-        software = self.software_var.get()
+
+        if self.software_var.get() != 'Other':
+            software = self.software_var.get()
+        else:
+            software = self.other_software_entry.get()
 
         if file_path and master_fp and et_summary_fp and timeline and software:
             try:
