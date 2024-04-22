@@ -131,14 +131,12 @@ class EyeTrackingSheet():
             df['% Fixation Socia'] = per_fix_soc * 100
             df['# Saccades Geo (n-1 fixations)'] = num_sac_geo
             df['# Saccades Social (n-1 fixations)'] = num_sac_soc
-            df['Saccades per Second Geo (n-1 fixations)'] = num_sac_sec_geo
-            df['Saccades Per Second Social (n-1 fixations)'] = num_sac_sec_soc
 
             df['# Saccades Geo (Tobii Pro Lab)'] = geo_sac
             df['# Saccades Social(Tobii Pro Lab)'] = soc_sac
 
-            df['Saccades per Second Geo'] = geo_sac / geo_dur
-            df['Saccades Per Second Social'] = soc_sac / soc_dur
+            df['Saccades per Second Geo'] = num_sac_sec_geo
+            df['Saccades Per Second Social'] = num_sac_sec_soc
 
             df['Number_of_fixations_Whole Movie_Geo R_N'] = df['Number_of_fixations.Geo-' + self.geo_tag]
             df['Fixation Duration_Whole Movie_Geo R_Mean'] = df['Average_duration_of_fixations.Geo-' + self.geo_tag]
@@ -330,8 +328,10 @@ class EyeTrackingSheet():
         
         if self.timeline == 'Geo':
             self.generated_df['Type of Video'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
-        elif self.timeline == 'Soc' or self.timeline == 'Play':
+        elif self.timeline == 'Soc':
             self.generated_df['Video Type'] = 'Geo-' + self.geo_tag + ', ' + 'Soc-' + self.soc_tag
+        elif self.timeline == 'Play':
+            self.generated_df['Video Type'] = 'Soc-' + self.soc_tag + ', ' + 'Geo-' + self.geo_tag
         elif self.timeline == 'Traffic':
             self.generated_df['VideoType'] = 'Motherese-' + self.geo_tag + ', ' + 'Traffic-' + self.soc_tag
         elif self.timeline == 'Techno':
