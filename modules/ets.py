@@ -41,10 +41,10 @@ class EyeTrackingSheet():
         self.software = software
         
         if timeline in ['Traffic', 'Techno']:
-            self.geo_tag = self.df['Media'][0][-1]
+            self.geo_tag = self.df['Media'].iloc[0][-1]
             self.soc_tag = 'R' if self.geo_tag == 'L' else 'L'
         else:
-            self.geo_tag = self.df['TOI'][0][-1]
+            self.geo_tag = self.df['TOI'].iloc[0][-1]
             self.soc_tag = 'R' if self.geo_tag == 'L' else 'L'
         
         self.generated_df = None
@@ -310,7 +310,7 @@ class EyeTrackingSheet():
         
         def split_participant(column):
             subject_id = column.apply(lambda data: data[:5])
-            date = column.apply(lambda data: pd.to_datetime(data[6:]))
+            date = column.apply(lambda data: pd.to_datetime(data[6:].replace('_', '-')))
             return subject_id, date
         
         if self.timeline == 'Traffic' or self.timeline == 'Techno':
