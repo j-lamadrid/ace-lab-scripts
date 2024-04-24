@@ -370,12 +370,16 @@ class EyeTrackingSheet():
                                  on='Subject ID')
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
-                                                                ', ' + 
-                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+            
+            self.et_summary_df['Vision Abnormalities/Notes'] = (
+                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                 if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
+                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 for i in range(self.et_summary_df.shape[0])]
+                 )
 
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
-                                                                'final_calibration_quality', 'quality',
+                                                                'final_calibration_quality', 'quality.5',
                                                                 'ageMo']], on='Subject ID')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
@@ -404,7 +408,7 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'recentDxJ_ageMo': 'Recent Dx Age'}, inplace=True)
             merged_df.rename(columns={'recentDxJ': 'Recent DxJ'}, inplace=True)
             merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
-            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'quality.5': 'Data Quality'}, inplace=True)
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent Dx evalDate']) - pd.to_datetime(merged_df['DOB'])) / 
                                           pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
@@ -427,12 +431,16 @@ class EyeTrackingSheet():
                                  on='Subject ID')
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
-                                                                ', ' + 
-                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+            
+            self.et_summary_df['Vision Abnormalities/Notes'] = (
+                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                 if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
+                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 for i in range(self.et_summary_df.shape[0])]
+                 )
 
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
-                                                                'final_calibration_quality', 'quality',
+                                                                'final_calibration_quality', 'quality.6',
                                                                 'ageMo']], on='Subject ID')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
@@ -457,7 +465,7 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'recentDxJ_ageMo': 'Recent Dx Age'}, inplace=True)
             merged_df.rename(columns={'recentDxJ': 'Recent DxJ'}, inplace=True)
             merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
-            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'quality.6': 'Data Quality'}, inplace=True)
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
             merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
@@ -482,12 +490,16 @@ class EyeTrackingSheet():
                                  on='Subject ID')
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
-                                                                ', ' + 
-                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+            
+            self.et_summary_df['Vision Abnormalities/Notes'] = (
+                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                 if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
+                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 for i in range(self.et_summary_df.shape[0])]
+                 )
 
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
-                                                                'final_calibration_quality', 'quality',
+                                                                'final_calibration_quality', 'quality.1',
                                                                 'ageMo']], on='Subject ID')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
@@ -512,7 +524,7 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'recentDxJ_ageMo': 'Recent Dx Age'}, inplace=True)
             merged_df.rename(columns={'recentDxJ': 'Recent DxJ'}, inplace=True)
             merged_df.rename(columns={'recentDxJ_dxCode': 'Recent DxJ Code'}, inplace=True)
-            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'quality.1': 'Data Quality'}, inplace=True)
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision'}, inplace=True)
             merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
@@ -537,12 +549,16 @@ class EyeTrackingSheet():
                                  on='Subject ID')
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
-                                                                ', ' + 
-                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+            
+            self.et_summary_df['Vision Abnormalities/Notes'] = (
+                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                 if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
+                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 for i in range(self.et_summary_df.shape[0])]
+                 )
 
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
-                                                                'final_calibration_quality', 'quality',
+                                                                'final_calibration_quality', 'quality.4',
                                                                 'ageMo']], on='Subject ID')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
@@ -563,7 +579,7 @@ class EyeTrackingSheet():
             
             merged_df.rename(columns={'ageMo': 'ET Age'}, inplace=True)
             merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
-            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'quality.4': 'Data Quality'}, inplace=True)
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
             merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
@@ -588,12 +604,16 @@ class EyeTrackingSheet():
                                  on='Subject ID')
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
-            self.et_summary_df['Vision Abnormalities/Notes'] = (self.et_summary_df['vision_bbnormalities'] + 
-                                                                ', ' + 
-                                                                self.et_summary_df['vision_Abnormalities_Comnts'])
+            
+            self.et_summary_df['Vision Abnormalities/Notes'] = (
+                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                 if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
+                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 for i in range(self.et_summary_df.shape[0])]
+                 )
 
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
-                                                                'final_calibration_quality', 'quality',
+                                                                'final_calibration_quality', 'quality.2',
                                                                 'ageMo']], on='Subject ID')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
@@ -615,7 +635,7 @@ class EyeTrackingSheet():
             merged_df.rename(columns={'DOB': 'Date of Birth'}, inplace=True)
             merged_df.rename(columns={'ageMo': 'ET Age'}, inplace=True)
             merged_df.rename(columns={'gender': 'Sex'}, inplace=True)
-            merged_df.rename(columns={'quality': 'Data Quality'}, inplace=True)
+            merged_df.rename(columns={'quality.2': 'Data Quality'}, inplace=True)
             merged_df.rename(columns={'final_calibration_quality': 'Calibration Quality'}, inplace=True)
             merged_df.rename(columns={'Vision Abnormalities/Notes': 'Vision Abnormalities'}, inplace=True)
             merged_df.rename(columns={'Date of Eye-tracking': 'ET Date'}, inplace=True)
