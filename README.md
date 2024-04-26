@@ -6,7 +6,7 @@ Scripts made using Python 3.12
 
 Included is a requirements.txt with all necessary installs.
 
-Run:
+After cloning this repository, ```cd``` in and run:
 ```pip install -r requirements.txt```
 
 or if using Conda:
@@ -18,7 +18,7 @@ or if using Conda:
 2. ```cd``` into this repository
 3. run a chosen script by entering ```python ___.py```
 
-### Eye Tracking Sheet Merger (WIP)
+### Eye Tracking Sheet Merger
 
 ![ETS Gui](images/ets_gui.PNG)
 
