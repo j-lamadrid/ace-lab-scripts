@@ -129,7 +129,8 @@ class etsGUI:
                 ets.generate()
                 ets.fill()
                 ets.push()
-                ets.master_df.to_excel(master_fp[:-5] + '_updated.xlsx', index=False)
+                output_name = master_fp[:-5] + '_updated.xlsx' if 'updated' not in master_fp else master_fp
+                ets.master_df.to_excel(output_name, index=False)
                 messagebox.showinfo("Success", "Script executed successfully!")
                 print("File exported at " + master_fp[:-5] + "_updated.xlsx")
             except Exception as e:
