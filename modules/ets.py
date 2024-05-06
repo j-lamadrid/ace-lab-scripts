@@ -368,6 +368,14 @@ class EyeTrackingSheet():
                                               'recentDxJ', 'recentDxJ_dxCode', 
                                               'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
                                  on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            lwr_failed = []
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+                    lwr_failed.append(sid)
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
@@ -381,6 +389,12 @@ class EyeTrackingSheet():
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
                                                                 'final_calibration_quality', 'quality.5',
                                                                 'ageMo']], on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids and sid not in lwr_failed:
+                    print(sid + ' NOT IN ET SUMMARY, DATA NOT TRANSFERRED')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['Unnamed: 7'] = [np.nan] * merged_df.shape[0]
@@ -413,12 +427,6 @@ class EyeTrackingSheet():
             merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent Dx evalDate']) - pd.to_datetime(merged_df['DOB'])) / 
                                           pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['Age at ET'] = ((merged_df['Date of Eye-tracking'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
-
-            final_ids = merged_df['Subject ID'].values
-            original_ids = self.generated_df['Subject ID'].values
-            for sid in original_ids:
-                if sid not in final_ids:
-                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
         
         elif self.timeline == 'Soc':
             
@@ -429,6 +437,14 @@ class EyeTrackingSheet():
                                               'recentDxJ', 'recentDxJ_dxCode', 
                                               'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
                                  on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            lwr_failed = []
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+                    lwr_failed.append(sid)
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
@@ -442,6 +458,12 @@ class EyeTrackingSheet():
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
                                                                 'final_calibration_quality', 'quality.6',
                                                                 'ageMo']], on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids and sid not in lwr_failed:
+                    print(sid + ' NOT IN ET SUMMARY, DATA NOT TRANSFERRED')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['DxJ Code Number'] = [np.nan] * merged_df.shape[0]
@@ -472,12 +494,6 @@ class EyeTrackingSheet():
             merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent Dx Date']) - pd.to_datetime(merged_df['Date of Birth'])) / 
                                           pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
-
-            final_ids = merged_df['Subject ID'].values
-            original_ids = self.generated_df['Subject ID'].values
-            for sid in original_ids:
-                if sid not in final_ids:
-                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
                     
         elif self.timeline == 'Play':
             
@@ -488,6 +504,14 @@ class EyeTrackingSheet():
                                               'recentDxJ', 'recentDxJ_dxCode', 
                                               'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
                                  on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            lwr_failed = []
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+                    lwr_failed.append(sid)
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
@@ -501,6 +525,12 @@ class EyeTrackingSheet():
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
                                                                 'final_calibration_quality', 'quality.1',
                                                                 'ageMo']], on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids and sid not in lwr_failed:
+                    print(sid + ' NOT IN ET SUMMARY, DATA NOT TRANSFERRED')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['Recent Dx Code Number'] = [np.nan] * merged_df.shape[0]
@@ -531,12 +561,6 @@ class EyeTrackingSheet():
             merged_df['Recent Dx Age'] = ((pd.to_datetime(merged_df['Recent DxDate']) - pd.to_datetime(merged_df['Date of Birth'])) / 
                                           pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
-
-            final_ids = merged_df['Subject ID'].values
-            original_ids = self.generated_df['Subject ID'].values
-            for sid in original_ids:
-                if sid not in final_ids:
-                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
                     
         elif self.timeline == 'Traffic':
             
@@ -547,6 +571,14 @@ class EyeTrackingSheet():
                                               'recentDxJ', 'recentDxJ_dxCode', 
                                               'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
                                  on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            lwr_failed = []
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+                    lwr_failed.append(sid)
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
@@ -560,6 +592,12 @@ class EyeTrackingSheet():
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
                                                                 'final_calibration_quality', 'quality.4',
                                                                 'ageMo']], on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids and sid not in lwr_failed:
+                    print(sid + ' NOT IN ET SUMMARY, DATA NOT TRANSFERRED')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['Recent DxJ Number'] = [np.nan] * merged_df.shape[0]
@@ -586,12 +624,6 @@ class EyeTrackingSheet():
             merged_df['recentDxJ_ageMo'] = ((pd.to_datetime(merged_df['recentDxJ_evalDate']) - pd.to_datetime(merged_df['DOB'])) / 
                                             pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['DOB'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
-
-            final_ids = merged_df['Subject ID'].values
-            original_ids = self.generated_df['Subject ID'].values
-            for sid in original_ids:
-                if sid not in final_ids:
-                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
         
         elif self.timeline == 'Techno':
             
@@ -602,6 +634,14 @@ class EyeTrackingSheet():
                                               'recentDxJ', 'recentDxJ_dxCode', 
                                               'recentDxJ_evalDate', 'recentDxJ_ageMo']], 
                                  on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            lwr_failed = []
+            for sid in original_ids:
+                if sid not in final_ids:
+                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
+                    lwr_failed.append(sid)
 
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
@@ -615,6 +655,12 @@ class EyeTrackingSheet():
             merged_df = pd.merge(merged_df, self.et_summary_df[['Subject ID', 'Vision Abnormalities/Notes', 
                                                                 'final_calibration_quality', 'quality.2',
                                                                 'ageMo']], on='Subject ID')
+            
+            final_ids = merged_df['Subject ID'].values
+            original_ids = self.generated_df['Subject ID'].values
+            for sid in original_ids:
+                if sid not in final_ids and sid not in lwr_failed:
+                    print(sid + ' NOT IN ET SUMMARY, DATA NOT TRANSFERRED')
 
             merged_df['final_calibration_quality'] = merged_df['final_calibration_quality'].apply(lambda s: s.split(':')[0])
             merged_df['Recent DxCode Number'] = [np.nan] * merged_df.shape[0]
@@ -642,12 +688,6 @@ class EyeTrackingSheet():
             merged_df['recentDxJ_ageMo'] = ((pd.to_datetime(merged_df['recentDxJ_evalDate']) - pd.to_datetime(merged_df['Date of Birth'])) / 
                                             pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
             merged_df['ET Age'] = ((merged_df['ET Date'] - pd.to_datetime(merged_df['Date of Birth'])) / pd.Timedelta(days=365) * 12).apply(lambda age: round(age, 2))
-
-            final_ids = merged_df['Subject ID'].values
-            original_ids = self.generated_df['Subject ID'].values
-            for sid in original_ids:
-                if sid not in final_ids:
-                    print(sid + ' NOT IN LWR, DATA NOT TRANSFERRED')
         
         self.generated_df = merged_df
         
