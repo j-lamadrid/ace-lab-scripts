@@ -380,9 +380,9 @@ class EyeTrackingSheet():
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
             self.et_summary_df['Vision Abnormalities/Notes'] = (
-                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                [str(self.et_summary_df['vision_bbnormalities'][i]) + ', ' + str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) 
                  if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
-                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 else str(self.et_summary_df['vision_bbnormalities'][i])
                  for i in range(self.et_summary_df.shape[0])]
                  )
 
@@ -449,9 +449,9 @@ class EyeTrackingSheet():
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
             self.et_summary_df['Vision Abnormalities/Notes'] = (
-                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                [str(self.et_summary_df['vision_bbnormalities'][i]) + ', ' + str(self.et_summary_df['vision_Abnormalities_Comnts'][i])
                  if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
-                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 else str(self.et_summary_df['vision_bbnormalities'][i]) 
                  for i in range(self.et_summary_df.shape[0])]
                  )
 
@@ -516,9 +516,9 @@ class EyeTrackingSheet():
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
             self.et_summary_df['Vision Abnormalities/Notes'] = (
-                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                [str(self.et_summary_df['vision_bbnormalities'][i]) + ', ' + str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) 
                  if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
-                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 else str(self.et_summary_df['vision_bbnormalities'][i]) 
                  for i in range(self.et_summary_df.shape[0])]
                  )
 
@@ -583,9 +583,9 @@ class EyeTrackingSheet():
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
             self.et_summary_df['Vision Abnormalities/Notes'] = (
-                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                [str(self.et_summary_df['vision_bbnormalities'][i]) + ', ' + str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) 
                  if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
-                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 else str(self.et_summary_df['vision_bbnormalities'][i])
                  for i in range(self.et_summary_df.shape[0])]
                  )
 
@@ -646,9 +646,9 @@ class EyeTrackingSheet():
             self.et_summary_df.rename(columns={'subjectid': 'Subject ID'}, inplace=True)
             
             self.et_summary_df['Vision Abnormalities/Notes'] = (
-                [self.et_summary_df['vision_bbnormalities'][i] + ', ' + self.et_summary_df['vision_Abnormalities_Comnts'][i] 
+                [str(self.et_summary_df['vision_bbnormalities'][i]) + ', ' + str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) 
                  if str(self.et_summary_df['vision_Abnormalities_Comnts'][i]) != 'nan' 
-                 else self.et_summary_df['vision_bbnormalities'][i] 
+                 else str(self.et_summary_df['vision_bbnormalities'][i])
                  for i in range(self.et_summary_df.shape[0])]
                  )
 
