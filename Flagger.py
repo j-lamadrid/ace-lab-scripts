@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 import os
+import traceback
 
 class IDDateSortGUI:
     def __init__(self, master):
@@ -43,6 +44,7 @@ class IDDateSortGUI:
                 id_date_sort(file_path, output_name)
                 tk.messagebox.showinfo("Success", "Script executed successfully!")
             except Exception as e:
+                traceback.print_exc()
                 tk.messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:
             tk.messagebox.showerror("Error", "Please provide both input file path and output file name.")
@@ -99,5 +101,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
     

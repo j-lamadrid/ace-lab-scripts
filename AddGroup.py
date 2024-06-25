@@ -84,6 +84,7 @@ class AddGroupGUI:
                           ends_with=ends_with, possibilities=possibilities, min_dxj=min_dxj)
                 tk.messagebox.showinfo("Success", "Script executed successfully!")
             except Exception as e:
+                print(e)
                 tk.messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:
             tk.messagebox.showerror("Error", "Please provide both input file path and output file name.")

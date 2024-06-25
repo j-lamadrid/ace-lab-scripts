@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
+import traceback
 
 class CalcTxGUI:
     def __init__(self, master):
@@ -55,6 +56,7 @@ class CalcTxGUI:
                 calculate_treatment_units(file_path, output_dir + '/' + output_name)
                 tk.messagebox.showinfo("Success", "Script executed successfully!")
             except Exception as e:
+                traceback.print_exc()
                 tk.messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:
             tk.messagebox.showerror("Error", "Please provide both input file path and output file name.")

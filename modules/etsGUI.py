@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from modules.ets import EyeTrackingSheet
+import traceback
 
 class etsGUI:
 
@@ -134,6 +135,7 @@ class etsGUI:
                 messagebox.showinfo("Success", "Script executed successfully!")
                 print("File exported at " + master_fp[:-5] + "_updated.xlsx")
             except Exception as e:
+                traceback.print_exc()
                 messagebox.showerror("Error", f"An error occurred: {str(e)}")
         else:
             messagebox.showerror("Error", "Please provide all necessary information.")
