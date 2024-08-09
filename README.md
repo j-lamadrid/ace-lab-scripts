@@ -88,3 +88,16 @@ Steps:
 2. Browse for desired tx hours data sheet
 3. Choose a filename (without extension)
 4. ```Run```
+
+### MacArthur Percentile Calculator
+
+![MacArthur Percentile Calculator Gui](images/macarthur_gui.PNG)
+
+Populates the LWR with the most appropriate percentile by visit/section based on the MacArthur Bates ranking charts
+
+Steps:
+1. ```python MacArthurPercentiles.py```
+2. Browse for most recent LWR
+3. Browse for the scoring appendix sheet
+4. Browse for desired output directory (will output file as 'macarthur_percentiles.xlsx' here)
+4. ```Run```
