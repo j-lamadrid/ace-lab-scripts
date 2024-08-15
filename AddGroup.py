@@ -133,7 +133,7 @@ def add_group(sheet_path, output_name, new_group, begins_with=None, ends_with=No
     for i in range(df.shape[0]):
 
         arr = df.iloc[i]
-        dxj = arr[[2, 12, 22, 32, 42]]
+        dxj = arr[['DxJ_DxGroup_1', 'DxJ_DxGroup_2', 'DxJ_DxGroup_3', 'DxJ_DxGroup_4', 'DxJ_DxGroup_5']]
         dxj = dxj[dxj.notnull()].values
             
         try:

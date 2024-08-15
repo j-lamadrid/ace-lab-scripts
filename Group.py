@@ -95,7 +95,7 @@ def group_late_talkers(sheet_path, output_name):
     for i in range(talkers_df.shape[0]):
 
         arr = talkers_df.iloc[i]
-        dxj = arr[[2, 12, 22, 32, 42]]
+        dxj = arr[['DxJ_DxGroup_1', 'DxJ_DxGroup_2', 'DxJ_DxGroup_3', 'DxJ_DxGroup_4', 'DxJ_DxGroup_5']]
         dxj = dxj[dxj.notnull()].values
 
         try:
